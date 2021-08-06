@@ -38,9 +38,11 @@ const login = async (req, res) => {
             id: usuario.id,
         }, jwtSecret)
 
+        const {senha: senhaUsuario, ...dadosUsuario} = usuario; 
+
         return res.status(200).json({
-            "Message": "Parabéns você está logado!",
-            "Token": token
+            usuario: dadosUsuario,
+            token
         });
     } catch(error) {
         return res.status(400).json(error.message);
