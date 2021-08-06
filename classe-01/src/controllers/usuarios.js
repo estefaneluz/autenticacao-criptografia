@@ -1,3 +1,5 @@
+const conexao = require('../connection');
+
 const cadastrarUsuario = async (req, res) => {
 
 }

@@ -1,3 +1,5 @@
+const conexao = require('../connection');
+
 const cadastrarPokemon = async (req, res) => {
 
 }
