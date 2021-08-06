@@ -1,5 +1,7 @@
 const conexao = require('../connection')
 const securePassword = require('secure-password');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../jwt_secret');
 const pwd = securePassword();
 
 const login = async (req, res) => {
@@ -16,7 +18,7 @@ const login = async (req, res) => {
 
         const usuario = rows[0];
         const resultado = await pwd.verify(Buffer.from(senha), Buffer.from(usuario.senha, "hex"));
-        
+
         switch(resultado){
             case securePassword.INVALID_UNRECOGNIZED_HASH:
             case securePassword.INVALID:
@@ -32,7 +34,14 @@ const login = async (req, res) => {
                 break;
         }
 
-        return res.status(200).json(`heyyy!! Tudo bem? O seu nome é ${usuario.nome}`);
+        const token = jwt.sign({
+            id: usuario.id,
+        }, jwtSecret)
+
+        return res.status(200).json({
+            "Message": "Parabéns você está logado!",
+            "Token": token
+        });
     } catch(error) {
         return res.status(400).json(error.message);
     }
