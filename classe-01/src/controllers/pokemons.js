@@ -51,6 +51,32 @@ const listarPokemonPorId = async (req, res) => {
     }
 }
 
+const atualizarPokemon = async (req, res) => {
+    const { id } = req.params;
+    const { apelido } = req.body;
+    const { id: usuario_id } = req.usuario;
+
+    if(!apelido) return res.status(400).json("É preciso informar o novo apelido.");
+    
+    try {
+        const pokemon = await conexao.query(
+            `SELECT FROM pokemons WHERE id = $1 AND usuario_id = $2`,
+            [id, usuario_id]
+        );
+        if(!pokemon.rowCount) return res.status(400).json("Pokemon não encontrado");
+
+        const pokemonAtualizado = await conexao.query(
+            `UPDATE pokemons SET apelido = $1 WHERE id = $2 AND usuario_id = $3`,
+            [apelido, id, usuario_id]
+        );
+        if(!pokemonAtualizado.rowCount) return res.status(400).json("Não foi possível atualizar o pokemon.");
+
+        return res.status(200).json("Pokemon atualizado.");
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 const deletarPokemon = async (req, res) => {
     const { id } = req.params;
     const { id: usuario_id } = req.usuario;
@@ -73,4 +99,4 @@ const deletarPokemon = async (req, res) => {
     }
 }
 
-module.exports = { cadastrarPokemon, listarPokemons, listarPokemonPorId, deletarPokemon }
+module.exports = { cadastrarPokemon, listarPokemons, listarPokemonPorId, atualizarPokemon, deletarPokemon }
