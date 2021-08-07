@@ -1,4 +1,3 @@
-const { resolveSoa } = require('dns');
 const conexao = require('../connection');
 
 const cadastrarPokemon = async (req, res) => {
@@ -52,4 +51,26 @@ const listarPokemonPorId = async (req, res) => {
     }
 }
 
-module.exports = { cadastrarPokemon, listarPokemons, listarPokemonPorId }
+const deletarPokemon = async (req, res) => {
+    const { id } = req.params;
+    const { id: usuario_id } = req.usuario;
+
+    try {
+        const pokemon = await conexao.query(
+            "SELECT * FROM pokemons WHERE id = $1 AND usuario_id = $2",
+            [id, usuario_id]);
+        if(!pokemon.rowCount) return res.status(404).json("Pokemon não encontrado.");
+
+        const pokemonDeletado = await conexao.query(
+            "DELETE FROM pokemons WHERE id = $1 AND usuario_id = $2",
+            [id, usuario_id]
+        );
+        if(!pokemonDeletado.rowCount) return res.status(400).json("Não foi possível deletar o pokemon.");
+
+        return res.status(200).json("Pokemon deletado com sucesso!");
+    } catch(error) {
+        return res.status(400).json(error.message);
+    }
+}
+
+module.exports = { cadastrarPokemon, listarPokemons, listarPokemonPorId, deletarPokemon }
