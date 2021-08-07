@@ -1,3 +1,4 @@
+const { resolveSoa } = require('dns');
 const conexao = require('../connection');
 
 const cadastrarPokemon = async (req, res) => {
@@ -17,4 +18,23 @@ const cadastrarPokemon = async (req, res) => {
     }
 }
 
-module.exports = { cadastrarPokemon }
+const listarPokemons = async (req, res) => {
+    const { id } = req.usuario;
+
+    try {
+        const query = `
+        SELECT p.id, u.nome as usuario, p.nome, p.apelido, p.habilidades, p.imagem FROM pokemons p 
+        JOIN usuarios u ON u.id = p.usuario_id AND p.usuario_id = $1`
+        const {rows: pokemons} = await conexao.query(query, [id]);
+
+        for(const pokemon of pokemons){
+            pokemon.habilidades = pokemon.habilidades.split(', ');
+        }
+
+        return res.status(200).json(pokemons);
+    } catch(error){
+        return res.status(400).json(error.message);
+    }
+}
+
+module.exports = { cadastrarPokemon, listarPokemons }
