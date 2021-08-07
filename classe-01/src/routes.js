@@ -13,5 +13,6 @@ routes.use(verificaLogin);
 
 routes.post('/pokemons', pokemons.cadastrarPokemon);
 routes.get('/pokemons', pokemons.listarPokemons);
+routes.get('/pokemons/:id', pokemons.listarPokemonPorId);
 
 module.exports = routes;

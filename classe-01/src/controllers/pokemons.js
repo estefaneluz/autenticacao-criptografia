@@ -37,4 +37,19 @@ const listarPokemons = async (req, res) => {
     }
 }
 
-module.exports = { cadastrarPokemon, listarPokemons }
+const listarPokemonPorId = async (req, res) => {
+    const { id } = req.params;
+    const { id: usuario_id } = req.usuario;
+    try {
+        const pokemon = await conexao.query(
+            `SELECT p.id, u.nome as usuario, p.nome, p.apelido, p.habilidades, p.imagem FROM pokemons p 
+            JOIN usuarios u ON u.id = p.usuario_id 
+            AND p.usuario_id = $1 AND p.id = $2`, [usuario_id, id]);
+        if(!pokemon.rowCount) return res.status(404).json("Pokemon não encontrado.");
+        return res.status(200).json(pokemon.rows[0]);
+    } catch(error){
+        return res.status(400).json(error.message);
+    }
+}
+
+module.exports = { cadastrarPokemon, listarPokemons, listarPokemonPorId }
