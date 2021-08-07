@@ -9,6 +9,8 @@ const routes = express();
 routes.post('/usuarios', usuarios.cadastrarUsuario);
 routes.post('/login', login.login);
 
-// routes.use(verificaLogin);
+routes.use(verificaLogin);
+
+routes.post('/pokemons', pokemons.cadastrarPokemon)
 
 module.exports = routes;
